@@ -1,1 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Silvy - Your Family Member</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      background: #f0f8ff;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
+    .container {
+      width: 95%;
+      max-width: 600px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 90vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #8e9fff, #a7b7ff);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .chat-area {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: #f7faff;
+    }
+
+    .message {
+      margin-bottom: 12px;
+      padding: 10px 15px;
+      border-radius: 15px;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+
+    .user {
+      background: #d6e4ff;
+      align-self: flex-end;
+    }
+
+    .silvy {
+      background: #ffe4f7;
+      align-self: flex-start;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      padding: 15px;
+      background: #fafafa;
+    }
+
+    .controls input {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .controls button {
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #8e9fff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      transition: 0.2s;
+    }
+
+    .controls button:hover {
+      background: #6f80ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Silvy</h1>
+      <p>Your new family member is listening...</p>
+    </header>
+
+    <div class="chat-area" id="chatArea">
+      <!-- Messages will appear here -->
+    </div>
+
+    <div class="controls">
+      <button id="micBtn">🎤 Speak</button>
+      <input type="text" id="textInput" placeholder="Type a message..." />
+      <button id="sendBtn">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const micBtn = document.getElementById('micBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const textInput = document.getElementById('textInput');
+    const chatArea = document.getElementById('chatArea');
+
+    // Speech Recognition setup
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition;
+
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        addMessage(transcript, 'user');
+        silvyResponse(transcript);
+      };
+
+      micBtn.addEventListener('click', () => {
+        recognition.start();
+      });
+    } else {
+      micBtn.disabled = true;
+      micBtn.textContent = 'Mic not supported';
+    }
+
+    // Send button for text input
+    sendBtn.addEventListener('click', () => {
+      const text = textInput.value.trim();
+      if (text !== '') {
+        addMessage(text, 'user');
+        textInput.value = '';
+        silvyResponse(text);
+      }
+    });
+
+    // Add message to chat
+    function addMessage(text, sender) {
+      const msg = document.createElement('div');
+      msg.classList.add('message', sender);
+      msg.textContent = text;
+      chatArea.appendChild(msg);
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    // Placeholder Silvy response
+    function silvyResponse(userText) {
+      let response = "I heard you say: " + userText;
+      // In the future: connect to AI model here
+      setTimeout(() => {
+        addMessage("Silvy: " + response, 'silvy');
+      }, 500);
+    }
+  </script>
+</body>
+</html>
